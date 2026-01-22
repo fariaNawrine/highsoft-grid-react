@@ -102,7 +102,7 @@ function determinePaginationPosition(
     });
 
     if (isNestedInTable) {
-        return 'bottom';
+        return 'footer';
     }
 
     if (tableIndex === -1) {

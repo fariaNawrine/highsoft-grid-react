@@ -10,7 +10,7 @@ export interface PaginationControlsProps {
 /**
  * Position of the pagination component relative to the table
  */
-export type PaginationPosition = 'top' | 'bottom';
+export type PaginationPosition = 'top' | 'bottom' | 'footer';
 
 /**
  * Props for the Pagination component

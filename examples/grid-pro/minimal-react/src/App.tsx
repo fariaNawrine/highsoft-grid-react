@@ -53,8 +53,8 @@ function App() {
         Position options:
         - <Pagination> before <Table> → position: 'top'
         - <Pagination> after <Table> → position: 'bottom'
-        - <Pagination> nested in <Table> → position: 'bottom'
-        - Explicit position="top|bottom" prop always takes precedence
+        - <Pagination> nested in <Table> → position: 'footer' (inside tfoot)
+        - Explicit position="top|bottom|footer" prop always takes precedence
       */}
       <Grid options={options} gridRef={grid} callback={onGridCallback}>
         <Pagination 
