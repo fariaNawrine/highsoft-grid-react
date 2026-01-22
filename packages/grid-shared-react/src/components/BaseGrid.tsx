@@ -7,12 +7,13 @@
  *
  */
 
-import { useRef, useImperativeHandle, forwardRef, ForwardedRef } from 'react';
+import { useRef, useImperativeHandle, forwardRef, ForwardedRef, ReactNode, useMemo } from 'react';
 import {
     useGrid,
     GridType,
     GridInstance
 } from '../hooks/useGrid';
+import { processGridChildren, mergeOptionsWithChildConfig } from '../utils/processChildren';
 
 /**
  * Ref handle exposed by Grid components
@@ -40,6 +41,10 @@ export interface GridProps<TOptions> {
      * Optional callback to be called when the grid is initialized
      */
     callback?: (grid: GridInstance<TOptions>) => void;
+    /**
+     * Child components for declarative configuration (e.g., Pagination, Table)
+     */
+    children?: ReactNode;
 }
 
 /**
@@ -56,12 +61,19 @@ export const BaseGrid = forwardRef(function BaseGrid<TOptions>(
     props: BaseGridProps<TOptions>,
     ref: ForwardedRef<GridRefHandle<TOptions>>
 ) {
-    const { options, Grid, callback } = props;
+    const { options, Grid, callback, children } = props;
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const mergedOptions = useMemo(() => {
+        if (!children) return options;
+
+        const childConfig = processGridChildren(children);
+        return mergeOptionsWithChildConfig(options, childConfig);
+    }, [options, children]);
 
     const currGridRef = useGrid({
         containerRef,
-        options,
+        options: mergedOptions,
         Grid,
         callback
     });

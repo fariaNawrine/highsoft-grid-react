@@ -11,6 +11,8 @@ import GridLite from '@highcharts/grid-lite';
 
 export { default as Grid } from './Grid';
 export { default as GridLite } from './Grid';
+export { Pagination, Table } from '@highcharts/grid-shared-react';
 export type { GridInstance } from '@highcharts/grid-shared-react';
 export type { GridRefHandle } from '@highcharts/grid-shared-react';
+export type { PaginationProps, PaginationControlsProps, PaginationPosition, TableProps } from '@highcharts/grid-shared-react';
 export type GridOptions = GridLite.Options;
