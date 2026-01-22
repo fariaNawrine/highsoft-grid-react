@@ -1,5 +1,5 @@
 import { ReactNode, Children, isValidElement, ReactElement } from 'react';
-import { PaginationProps } from '../components/Pagination';
+import { PaginationProps, PaginationPosition } from '../components/Pagination';
 import { TableProps } from '../components/Table';
 
 /**
@@ -9,6 +9,7 @@ export interface ExtractedChildConfig {
     pagination?: {
         enabled: boolean;
         pageSize?: number;
+        position?: PaginationPosition;
         controls?: {
             pageButtons?: boolean;
             pageSizeSelector?: boolean;
@@ -60,6 +61,58 @@ function findPaginationInChildren(children: ReactNode): ReactElement<PaginationP
 }
 
 /**
+ * Determine pagination position based on child component order.
+ * 
+ * @param children - React children from the Grid component
+ * @param paginationElement - The found Pagination element
+ * @returns The determined position
+ */
+function determinePaginationPosition(
+    children: ReactNode,
+    paginationElement: ReactElement<PaginationProps>
+): PaginationPosition {
+    // Explicit position prop takes precedence
+    if (paginationElement.props.position) {
+        return paginationElement.props.position;
+    }
+
+    let tableIndex = -1;
+    let paginationIndex = -1;
+    let isNestedInTable = false;
+    let index = 0;
+
+    Children.forEach(children, (child) => {
+        if (!isValidElement(child)) return;
+
+        if (isTableComponent(child)) {
+            tableIndex = index;
+            // Check if pagination is nested inside this Table
+            if (child.props.children) {
+                Children.forEach(child.props.children, (nestedChild) => {
+                    if (isValidElement(nestedChild) && isPaginationComponent(nestedChild)) {
+                        isNestedInTable = true;
+                    }
+                });
+            }
+        } else if (isPaginationComponent(child)) {
+            paginationIndex = index;
+        }
+
+        index++;
+    });
+
+    if (isNestedInTable) {
+        return 'bottom';
+    }
+
+    if (tableIndex === -1) {
+        return 'bottom';
+    }
+
+    return paginationIndex < tableIndex ? 'top' : 'bottom';
+}
+
+/**
  * Process Grid children to extract configuration.
  * 
  * This function iterates through child components (Pagination, Table)
@@ -99,10 +152,12 @@ export function processGridChildren(children: ReactNode): ExtractedChildConfig {
 
     if (paginationElement) {
         const { pageSize, controls } = paginationElement.props;
+        const position = determinePaginationPosition(children, paginationElement);
 
         config.pagination = {
             enabled: true,
             pageSize,
+            position,
             controls: controls ? {
                 pageButtons: controls.pageButtons,
                 pageSizeSelector: controls.pageSizeSelector

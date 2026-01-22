@@ -49,11 +49,17 @@ function App() {
 
   return (
     <>
+      {/* 
+        Position options:
+        - <Pagination> before <Table> → position: 'top'
+        - <Pagination> after <Table> → position: 'bottom'
+        - <Pagination> nested in <Table> → position: 'bottom'
+        - Explicit position="top|bottom" prop always takes precedence
+      */}
       <Grid options={options} gridRef={grid} callback={onGridCallback}>
         <Pagination 
           pageSize={4} 
           controls={{ pageButtons: true, pageSizeSelector: true }} 
-          position="bottom"
         />
         <Table />
       </Grid>
